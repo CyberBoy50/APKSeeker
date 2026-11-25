@@ -1,0 +1,2 @@
+# APKSeeker uses only the Python standard library.
+# Nothing to install — this file exists so `pip install -r` stays a no-op.

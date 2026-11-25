@@ -1,0 +1,374 @@
+{
+  "tool": "APKSeeker",
+  "version": "1.0",
+  "author": "CyberBoy50",
+  "apk": "test_apks/test_bad.apk",
+  "scanned": "2026-11-25 17:41:55",
+  "manifest": {
+    "package": "com.example.labapp",
+    "version_code": 1,
+    "version_name": "1.0",
+    "min_sdk": 21,
+    "target_sdk": 28,
+    "application_label": "LabApp"
+  },
+  "entries": [
+    {
+      "name": "AndroidManifest.xml",
+      "compressed_size": 1252,
+      "uncompressed_size": 4812
+    },
+    {
+      "name": "classes.dex",
+      "compressed_size": 368,
+      "uncompressed_size": 535
+    },
+    {
+      "name": "resources.arsc",
+      "compressed_size": 64,
+      "uncompressed_size": 62
+    },
+    {
+      "name": "res/xml/network_security_config.xml",
+      "compressed_size": 402,
+      "uncompressed_size": 1272
+    },
+    {
+      "name": "lib/armeabi-v7a/liblab.so",
+      "compressed_size": 12,
+      "uncompressed_size": 72
+    },
+    {
+      "name": "lib/arm64-v8a/liblab.so",
+      "compressed_size": 12,
+      "uncompressed_size": 72
+    },
+    {
+      "name": "lib/x86/liblab.so",
+      "compressed_size": 12,
+      "uncompressed_size": 72
+    },
+    {
+      "name": "lib/x86_64/liblab.so",
+      "compressed_size": 12,
+      "uncompressed_size": 72
+    }
+  ],
+  "permissions": [
+    {
+      "name": "android.permission.INTERNET",
+      "dangerous": false,
+      "group": "normal"
+    },
+    {
+      "name": "android.permission.ACCESS_FINE_LOCATION",
+      "dangerous": true,
+      "group": "Location"
+    },
+    {
+      "name": "android.permission.CAMERA",
+      "dangerous": true,
+      "group": "Camera"
+    },
+    {
+      "name": "android.permission.SEND_SMS",
+      "dangerous": true,
+      "group": "SMS"
+    },
+    {
+      "name": "android.permission.READ_CONTACTS",
+      "dangerous": true,
+      "group": "Contacts"
+    },
+    {
+      "name": "android.permission.ACCESS_NETWORK_STATE",
+      "dangerous": false,
+      "group": "normal"
+    }
+  ],
+  "components": [
+    {
+      "type": "activity",
+      "name": ".MainActivity",
+      "exported": true,
+      "reason": "android:exported=true",
+      "permission": null
+    },
+    {
+      "type": "activity",
+      "name": ".ShareActivity",
+      "exported": true,
+      "reason": "intent-filter present, android:exported not set to false",
+      "permission": null
+    },
+    {
+      "type": "activity",
+      "name": ".SecretActivity",
+      "exported": false,
+      "reason": "not exported",
+      "permission": null
+    },
+    {
+      "type": "service",
+      "name": ".SyncService",
+      "exported": false,
+      "reason": "not exported",
+      "permission": null
+    },
+    {
+      "type": "receiver",
+      "name": ".BootReceiver",
+      "exported": true,
+      "reason": "android:exported=true",
+      "permission": "android.permission.RECEIVE_BOOT_COMPLETED"
+    },
+    {
+      "type": "provider",
+      "name": ".LabProvider",
+      "exported": false,
+      "reason": "not exported",
+      "permission": null
+    }
+  ],
+  "flags": {
+    "debuggable": true,
+    "allow_backup": true,
+    "min_sdk": 21,
+    "target_sdk": 28
+  },
+  "deep_links": [
+    {
+      "scheme": "labapp",
+      "host": "share",
+      "activity": ".ShareActivity",
+      "exported": true,
+      "permission": null
+    }
+  ],
+  "native_libs": {
+    "armeabi-v7a": [
+      "lib/armeabi-v7a/liblab.so"
+    ],
+    "arm64-v8a": [
+      "lib/arm64-v8a/liblab.so"
+    ],
+    "x86": [
+      "lib/x86/liblab.so"
+    ],
+    "x86_64": [
+      "lib/x86_64/liblab.so"
+    ]
+  },
+  "secret_hits": [
+    {
+      "entry": "classes.dex",
+      "offset": 285,
+      "pattern": "Google API key",
+      "severity": "high",
+      "match": "AIzaSyBF\u2026"
+    },
+    {
+      "entry": "classes.dex",
+      "offset": 344,
+      "pattern": "AWS access key",
+      "severity": "high",
+      "match": "AKIAIOSF\u2026"
+    },
+    {
+      "entry": "classes.dex",
+      "offset": 366,
+      "pattern": "Password assignment",
+      "severity": "high",
+      "match": "password\u2026"
+    },
+    {
+      "entry": "classes.dex",
+      "offset": 398,
+      "pattern": "Private URL",
+      "severity": "medium",
+      "match": "https://\u2026"
+    },
+    {
+      "entry": "resources.arsc",
+      "offset": 4,
+      "pattern": "API key assignment",
+      "severity": "high",
+      "match": "api_key \u2026"
+    }
+  ],
+  "notes": [
+    "Native libraries (arm64-v8a): 1 file(s) \u2014 lib/arm64-v8a/liblab.so",
+    "Native libraries (armeabi-v7a): 1 file(s) \u2014 lib/armeabi-v7a/liblab.so",
+    "Native libraries (x86): 1 file(s) \u2014 lib/x86/liblab.so",
+    "Native libraries (x86_64): 1 file(s) \u2014 lib/x86_64/liblab.so"
+  ],
+  "findings": [
+    {
+      "code": "APK-001",
+      "severity": "high",
+      "title": "Dangerous permission: android.permission.ACCESS_FINE_LOCATION",
+      "evidence": "Protection level 'dangerous' (Location). Declared in AndroidManifest.xml.",
+      "fix": "Remove the permission if the app does not need it; if it does, request it at runtime and explain why.",
+      "location": "AndroidManifest.xml"
+    },
+    {
+      "code": "APK-001",
+      "severity": "medium",
+      "title": "Dangerous permission: android.permission.CAMERA",
+      "evidence": "Protection level 'dangerous' (Camera). Declared in AndroidManifest.xml.",
+      "fix": "Remove the permission if the app does not need it; if it does, request it at runtime and explain why.",
+      "location": "AndroidManifest.xml"
+    },
+    {
+      "code": "APK-001",
+      "severity": "high",
+      "title": "Dangerous permission: android.permission.SEND_SMS",
+      "evidence": "Protection level 'dangerous' (SMS). Declared in AndroidManifest.xml.",
+      "fix": "Remove the permission if the app does not need it; if it does, request it at runtime and explain why.",
+      "location": "AndroidManifest.xml"
+    },
+    {
+      "code": "APK-001",
+      "severity": "medium",
+      "title": "Dangerous permission: android.permission.READ_CONTACTS",
+      "evidence": "Protection level 'dangerous' (Contacts). Declared in AndroidManifest.xml.",
+      "fix": "Remove the permission if the app does not need it; if it does, request it at runtime and explain why.",
+      "location": "AndroidManifest.xml"
+    },
+    {
+      "code": "APK-002",
+      "severity": "high",
+      "title": "Exported activity: .MainActivity",
+      "evidence": "android:exported=true. No android:permission \u2014 any app on the device can reach it.",
+      "fix": "Set android:exported=false if no other app needs it, or protect it with android:permission so only chosen apps can reach it.",
+      "location": "AndroidManifest.xml"
+    },
+    {
+      "code": "APK-002",
+      "severity": "high",
+      "title": "Exported activity: .ShareActivity",
+      "evidence": "intent-filter present, android:exported not set to false. No android:permission \u2014 any app on the device can reach it.",
+      "fix": "Set android:exported=false if no other app needs it, or protect it with android:permission so only chosen apps can reach it.",
+      "location": "AndroidManifest.xml"
+    },
+    {
+      "code": "APK-002",
+      "severity": "medium",
+      "title": "Exported receiver: .BootReceiver",
+      "evidence": "android:exported=true. Guarded by android:permission=android.permission.RECEIVE_BOOT_COMPLETED.",
+      "fix": "Keep the android:permission guard, and check the guarded permission is not itself granted to untrusted apps.",
+      "location": "AndroidManifest.xml"
+    },
+    {
+      "code": "APK-003",
+      "severity": "high",
+      "title": "Application is debuggable",
+      "evidence": "android:debuggable=true in <application>.",
+      "fix": "Set android:debuggable=false in the release build (or remove the attribute \u2014 release builds default to false).",
+      "location": "AndroidManifest.xml"
+    },
+    {
+      "code": "APK-004",
+      "severity": "medium",
+      "title": "Application allows backup",
+      "evidence": "android:allowBackup=true in <application> \u2014 app data can be pulled off with 'adb backup'.",
+      "fix": "Set android:allowBackup=false unless backup is a feature users need.",
+      "location": "AndroidManifest.xml"
+    },
+    {
+      "code": "APK-005",
+      "severity": "medium",
+      "title": "Old target SDK: 28",
+      "evidence": "android:targetSdkVersion=28 (Android 11 is API 30) \u2014 the app misses newer platform protections.",
+      "fix": "Raise android:targetSdkVersion to a current API level.",
+      "location": "AndroidManifest.xml"
+    },
+    {
+      "code": "APK-006",
+      "severity": "high",
+      "title": "Google API key in classes.dex",
+      "evidence": "Matched at offset 285: AIzaSyBF\u2026",
+      "fix": "Move the secret out of the app \u2014 use a server-side proxy, the Android Keystore, or a secrets manager; never ship keys in the APK.",
+      "location": "classes.dex @ offset 285"
+    },
+    {
+      "code": "APK-006",
+      "severity": "high",
+      "title": "AWS access key in classes.dex",
+      "evidence": "Matched at offset 344: AKIAIOSF\u2026",
+      "fix": "Move the secret out of the app \u2014 use a server-side proxy, the Android Keystore, or a secrets manager; never ship keys in the APK.",
+      "location": "classes.dex @ offset 344"
+    },
+    {
+      "code": "APK-006",
+      "severity": "high",
+      "title": "Password assignment in classes.dex",
+      "evidence": "Matched at offset 366: password\u2026",
+      "fix": "Move the secret out of the app \u2014 use a server-side proxy, the Android Keystore, or a secrets manager; never ship keys in the APK.",
+      "location": "classes.dex @ offset 366"
+    },
+    {
+      "code": "APK-006",
+      "severity": "medium",
+      "title": "Private URL in classes.dex",
+      "evidence": "Matched at offset 398: https://\u2026",
+      "fix": "Move the secret out of the app \u2014 use a server-side proxy, the Android Keystore, or a secrets manager; never ship keys in the APK.",
+      "location": "classes.dex @ offset 398"
+    },
+    {
+      "code": "APK-006",
+      "severity": "high",
+      "title": "API key assignment in resources.arsc",
+      "evidence": "Matched at offset 4: api_key \u2026",
+      "fix": "Move the secret out of the app \u2014 use a server-side proxy, the Android Keystore, or a secrets manager; never ship keys in the APK.",
+      "location": "resources.arsc @ offset 4"
+    },
+    {
+      "code": "APK-007",
+      "severity": "medium",
+      "title": "Unprotected deep link: labapp://",
+      "evidence": "Exported activity .ShareActivity handles scheme 'labapp://' (host share) \u2014 any app on the device can open it, with no permission check.",
+      "fix": "Protect the activity with android:permission, verify the link (App Links with assetlinks.json) instead of a bare custom scheme, or set android:exported=false.",
+      "location": "AndroidManifest.xml"
+    },
+    {
+      "code": "APK-008",
+      "severity": "high",
+      "title": "Cleartext traffic permitted (base-config)",
+      "evidence": "<base-config cleartextTrafficPermitted=\"true\"> in the network security config \u2014 cleartext is allowed for every host by default.",
+      "fix": "Set cleartextTrafficPermitted=false in <base-config>, or remove the attribute.",
+      "location": "res/xml/network_security_config.xml"
+    },
+    {
+      "code": "APK-008",
+      "severity": "high",
+      "title": "Cleartext traffic permitted (domain-config for api.example.com)",
+      "evidence": "<domain-config cleartextTrafficPermitted=\"true\"> in the network security config.",
+      "fix": "Set cleartextTrafficPermitted=false for the domain, or serve it over HTTPS.",
+      "location": "res/xml/network_security_config.xml"
+    },
+    {
+      "code": "APK-008",
+      "severity": "medium",
+      "title": "User certificates trusted",
+      "evidence": "<certificates src=\"user\"> in the network security config \u2014 certificates the user installed (for example a proxy CA) are trusted, so traffic can be intercepted.",
+      "fix": "Trust only system certificates (src=\"system\"), unless user CAs are a deliberate debugging choice.",
+      "location": "res/xml/network_security_config.xml"
+    },
+    {
+      "code": "APK-008",
+      "severity": "medium",
+      "title": "usesCleartextTraffic=true",
+      "evidence": "android:usesCleartextTraffic=true in <application> \u2014 the app opts into cleartext traffic.",
+      "fix": "Set android:usesCleartextTraffic=false.",
+      "location": "AndroidManifest.xml"
+    }
+  ],
+  "counts": {
+    "critical": 0,
+    "high": 11,
+    "medium": 9,
+    "low": 0
+  },
+  "total_findings": 20
+}

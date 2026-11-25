@@ -1,0 +1,180 @@
+APKSeeker v1.0 — Android APK Static Analyzer
+by CyberBoy50 — AUTHORIZED USE ONLY
+==========================================================
+APK: test_apks/test_bad.apk
+Scanned: 2026-11-25 17:41:55
+
+Manifest
+----------------------------------------------------------
+Package: com.example.labapp
+Version: 1.0 (code 1)
+minSdkVersion: 21   targetSdkVersion: 28
+Application label: LabApp
+
+Archive entries (8)
+----------------------------------------------------------
+  AndroidManifest.xml                                4812 bytes (compressed 1252)
+  classes.dex                                         535 bytes (compressed 368)
+  resources.arsc                                       62 bytes (compressed 64)
+  res/xml/network_security_config.xml                1272 bytes (compressed 402)
+  lib/armeabi-v7a/liblab.so                            72 bytes (compressed 12)
+  lib/arm64-v8a/liblab.so                              72 bytes (compressed 12)
+  lib/x86/liblab.so                                    72 bytes (compressed 12)
+  lib/x86_64/liblab.so                                 72 bytes (compressed 12)
+  Total uncompressed size: 6969 bytes
+
+Permissions (6 requested, 4 dangerous)
+----------------------------------------------------------
+  android.permission.INTERNET                          normal
+  android.permission.ACCESS_FINE_LOCATION              DANGEROUS (Location)
+  android.permission.CAMERA                            DANGEROUS (Camera)
+  android.permission.SEND_SMS                          DANGEROUS (SMS)
+  android.permission.READ_CONTACTS                     DANGEROUS (Contacts)
+  android.permission.ACCESS_NETWORK_STATE              normal
+
+Components (6, 3 exported)
+----------------------------------------------------------
+  activity   .MainActivity                            EXPORTED (android:exported=true)
+  activity   .ShareActivity                           EXPORTED (intent-filter present, android:exported not set to false)
+  activity   .SecretActivity                          not exported
+  service    .SyncService                             not exported
+  receiver   .BootReceiver                            EXPORTED (android:exported=true) [permission: android.permission.RECEIVE_BOOT_COMPLETED]
+  provider   .LabProvider                             not exported
+
+Flags
+----------------------------------------------------------
+  debuggable: True
+  allowBackup: True
+  minSdkVersion: 21   targetSdkVersion: 28
+
+Deep links (1)
+----------------------------------------------------------
+  labapp://share  (activity .ShareActivity, exported)
+
+Native libraries
+----------------------------------------------------------
+  arm64-v8a: 1 file(s)
+    lib/arm64-v8a/liblab.so
+  armeabi-v7a: 1 file(s)
+    lib/armeabi-v7a/liblab.so
+  x86: 1 file(s)
+    lib/x86/liblab.so
+  x86_64: 1 file(s)
+    lib/x86_64/liblab.so
+
+Secret scan hits (5)
+----------------------------------------------------------
+  [HIGH] Google API key — classes.dex @ offset 285: AIzaSyBF…
+  [HIGH] AWS access key — classes.dex @ offset 344: AKIAIOSF…
+  [HIGH] Password assignment — classes.dex @ offset 366: password…
+  [MEDIUM] Private URL — classes.dex @ offset 398: https://…
+  [HIGH] API key assignment — resources.arsc @ offset 4: api_key …
+
+Note: Native libraries (arm64-v8a): 1 file(s) — lib/arm64-v8a/liblab.so
+Note: Native libraries (armeabi-v7a): 1 file(s) — lib/armeabi-v7a/liblab.so
+Note: Native libraries (x86): 1 file(s) — lib/x86/liblab.so
+Note: Native libraries (x86_64): 1 file(s) — lib/x86_64/liblab.so
+
+Findings (20: 0 critical, 11 high, 9 medium, 0 low)
+----------------------------------------------------------
+[HIGH] [APK-001] Dangerous permission: android.permission.ACCESS_FINE_LOCATION
+    Evidence: Protection level 'dangerous' (Location). Declared in AndroidManifest.xml.
+    Location: AndroidManifest.xml
+    Fix: Remove the permission if the app does not need it; if it does, request it at runtime and explain why.
+
+[MEDIUM] [APK-001] Dangerous permission: android.permission.CAMERA
+    Evidence: Protection level 'dangerous' (Camera). Declared in AndroidManifest.xml.
+    Location: AndroidManifest.xml
+    Fix: Remove the permission if the app does not need it; if it does, request it at runtime and explain why.
+
+[HIGH] [APK-001] Dangerous permission: android.permission.SEND_SMS
+    Evidence: Protection level 'dangerous' (SMS). Declared in AndroidManifest.xml.
+    Location: AndroidManifest.xml
+    Fix: Remove the permission if the app does not need it; if it does, request it at runtime and explain why.
+
+[MEDIUM] [APK-001] Dangerous permission: android.permission.READ_CONTACTS
+    Evidence: Protection level 'dangerous' (Contacts). Declared in AndroidManifest.xml.
+    Location: AndroidManifest.xml
+    Fix: Remove the permission if the app does not need it; if it does, request it at runtime and explain why.
+
+[HIGH] [APK-002] Exported activity: .MainActivity
+    Evidence: android:exported=true. No android:permission — any app on the device can reach it.
+    Location: AndroidManifest.xml
+    Fix: Set android:exported=false if no other app needs it, or protect it with android:permission so only chosen apps can reach it.
+
+[HIGH] [APK-002] Exported activity: .ShareActivity
+    Evidence: intent-filter present, android:exported not set to false. No android:permission — any app on the device can reach it.
+    Location: AndroidManifest.xml
+    Fix: Set android:exported=false if no other app needs it, or protect it with android:permission so only chosen apps can reach it.
+
+[MEDIUM] [APK-002] Exported receiver: .BootReceiver
+    Evidence: android:exported=true. Guarded by android:permission=android.permission.RECEIVE_BOOT_COMPLETED.
+    Location: AndroidManifest.xml
+    Fix: Keep the android:permission guard, and check the guarded permission is not itself granted to untrusted apps.
+
+[HIGH] [APK-003] Application is debuggable
+    Evidence: android:debuggable=true in <application>.
+    Location: AndroidManifest.xml
+    Fix: Set android:debuggable=false in the release build (or remove the attribute — release builds default to false).
+
+[MEDIUM] [APK-004] Application allows backup
+    Evidence: android:allowBackup=true in <application> — app data can be pulled off with 'adb backup'.
+    Location: AndroidManifest.xml
+    Fix: Set android:allowBackup=false unless backup is a feature users need.
+
+[MEDIUM] [APK-005] Old target SDK: 28
+    Evidence: android:targetSdkVersion=28 (Android 11 is API 30) — the app misses newer platform protections.
+    Location: AndroidManifest.xml
+    Fix: Raise android:targetSdkVersion to a current API level.
+
+[HIGH] [APK-006] Google API key in classes.dex
+    Evidence: Matched at offset 285: AIzaSyBF…
+    Location: classes.dex @ offset 285
+    Fix: Move the secret out of the app — use a server-side proxy, the Android Keystore, or a secrets manager; never ship keys in the APK.
+
+[HIGH] [APK-006] AWS access key in classes.dex
+    Evidence: Matched at offset 344: AKIAIOSF…
+    Location: classes.dex @ offset 344
+    Fix: Move the secret out of the app — use a server-side proxy, the Android Keystore, or a secrets manager; never ship keys in the APK.
+
+[HIGH] [APK-006] Password assignment in classes.dex
+    Evidence: Matched at offset 366: password…
+    Location: classes.dex @ offset 366
+    Fix: Move the secret out of the app — use a server-side proxy, the Android Keystore, or a secrets manager; never ship keys in the APK.
+
+[MEDIUM] [APK-006] Private URL in classes.dex
+    Evidence: Matched at offset 398: https://…
+    Location: classes.dex @ offset 398
+    Fix: Move the secret out of the app — use a server-side proxy, the Android Keystore, or a secrets manager; never ship keys in the APK.
+
+[HIGH] [APK-006] API key assignment in resources.arsc
+    Evidence: Matched at offset 4: api_key …
+    Location: resources.arsc @ offset 4
+    Fix: Move the secret out of the app — use a server-side proxy, the Android Keystore, or a secrets manager; never ship keys in the APK.
+
+[MEDIUM] [APK-007] Unprotected deep link: labapp://
+    Evidence: Exported activity .ShareActivity handles scheme 'labapp://' (host share) — any app on the device can open it, with no permission check.
+    Location: AndroidManifest.xml
+    Fix: Protect the activity with android:permission, verify the link (App Links with assetlinks.json) instead of a bare custom scheme, or set android:exported=false.
+
+[HIGH] [APK-008] Cleartext traffic permitted (base-config)
+    Evidence: <base-config cleartextTrafficPermitted="true"> in the network security config — cleartext is allowed for every host by default.
+    Location: res/xml/network_security_config.xml
+    Fix: Set cleartextTrafficPermitted=false in <base-config>, or remove the attribute.
+
+[HIGH] [APK-008] Cleartext traffic permitted (domain-config for api.example.com)
+    Evidence: <domain-config cleartextTrafficPermitted="true"> in the network security config.
+    Location: res/xml/network_security_config.xml
+    Fix: Set cleartextTrafficPermitted=false for the domain, or serve it over HTTPS.
+
+[MEDIUM] [APK-008] User certificates trusted
+    Evidence: <certificates src="user"> in the network security config — certificates the user installed (for example a proxy CA) are trusted, so traffic can be intercepted.
+    Location: res/xml/network_security_config.xml
+    Fix: Trust only system certificates (src="system"), unless user CAs are a deliberate debugging choice.
+
+[MEDIUM] [APK-008] usesCleartextTraffic=true
+    Evidence: android:usesCleartextTraffic=true in <application> — the app opts into cleartext traffic.
+    Location: AndroidManifest.xml
+    Fix: Set android:usesCleartextTraffic=false.
+
+End of report — APKSeeker v1.0 by CyberBoy50
