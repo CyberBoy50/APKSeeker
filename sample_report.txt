@@ -1,4 +1,4 @@
-APKSeeker v1.1 — Android APK Static Analyzer
+APKSeeker v1.2 — Android APK Static Analyzer
 by CyberBoy50 — AUTHORIZED USE ONLY
 ==========================================================
 DISCLAIMER — AUTHORIZED USE ONLY. This tool was built for
@@ -11,7 +11,7 @@ testing anything else may be illegal (for example, PECA
 2016 in Pakistan).
 ==========================================================
 APK: test_apks/test_bad.apk
-Scanned: 2026-11-25 19:23:39
+Scanned: 2026-11-25 19:41:49
 
 Manifest
 ----------------------------------------------------------
@@ -186,4 +186,4 @@ Findings (20: 0 critical, 11 high, 9 medium, 0 low)
     Location: AndroidManifest.xml
     Fix: Set android:usesCleartextTraffic=false.
 
-End of report — APKSeeker v1.1 by CyberBoy50
+End of report — APKSeeker v1.2 by CyberBoy50

@@ -4,7 +4,7 @@
 Usage:
     python run.py setup        # create venv (first time only)
     python run.py scan <apk>   # scan an APK (any extra flags pass through)
-    python run.py test         # run the 8 build-plan step tests
+    python run.py test         # run the 9 build-plan step tests
     python run.py doctor       # check the setup
     python run.py build-apk    # regenerate the test APK fixtures
     python run.py menu         # open the numbered menu

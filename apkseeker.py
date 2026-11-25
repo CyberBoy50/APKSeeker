@@ -98,7 +98,7 @@ import textwrap
 import zipfile
 from datetime import datetime
 
-VERSION = "1.1"
+VERSION = "1.2"
 AUTHOR = "CyberBoy50"
 QUIET = False
 
@@ -1089,8 +1089,15 @@ def analyze_deeplinks(analysis):
 
     A custom scheme on an exported activity with no permission is an
     unprotected deep link (Medium). http/https schemes are normal and
-    are listed without a finding.
+    are listed without a finding. So are the Android system data
+    schemes "content" and "file": an activity that opens files or
+    content URIs is doing the standard VIEW open-file flow, not
+    offering an app deep link — flagging them would fire on nearly
+    every real document editor (found on the first real-world APK,
+    Markor, which handles content:// and file:// in its editor
+    activity). They are still listed in the deep-links table.
     """
+    SYSTEM_DATA_SCHEMES = frozenset({"content", "file"})
     app = analysis.apk.manifest.find_child("application")
     if app is None:
         return
@@ -1111,7 +1118,7 @@ def analyze_deeplinks(analysis):
                     host = data.attr("host")
                     analysis.deep_links.append(
                         (scheme, host, name, is_exported, guard))
-                    if scheme in ("http", "https"):
+                    if scheme in ("http", "https") or scheme in SYSTEM_DATA_SCHEMES:
                         continue
                     if is_exported and not guard:
                         analysis.findings.append(Finding(

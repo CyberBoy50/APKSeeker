@@ -12,7 +12,7 @@ python3 apkseeker.py test_apks/test_bad.apk
 
 ```
 ============================================================
-  APKSeeker v1.1 — Android APK Static Analyzer
+  APKSeeker v1.2 — Android APK Static Analyzer
   by CyberBoy50
   AUTHORIZED USE ONLY — scan APKs you own or have written
   permission to audit. APKSeeker only reads; it never runs
@@ -180,6 +180,91 @@ door: `android:exported="false"`, no finding at all.
 4. **Check the report, not the intent.** Run the scanner before
    release: `APK-002` High means "any app on the device can reach
    this" — that is the line to fix first.
+
+## Real-world scan: Markor from F-Droid (v1.2)
+
+The first production APK ever run through APKSeeker — **Markor**
+(`net.gsantner.markor` 2026.10.0, versionCode 164), an open-source
+notes/text-editor app downloaded from F-Droid. This is the scan that
+closed the "lab-only" limit: the tool had only ever seen its own
+three hand-built fixtures before.
+
+```bash
+curl -o test_apks/markor_164.apk https://f-droid.org/repo/net.gsantner.markor_164.apk
+python3 apkseeker.py test_apks/markor_164.apk
+```
+
+The APK: 1,732 entries, 11,849,016 bytes (24,692,136 uncompressed),
+two dex files (`classes.dex` 9,677,760 bytes + `classes2.dex`
+782,724 bytes), a 59,992-byte binary manifest with a UTF-16 string
+pool, minSdk 21, targetSdk 35, not debuggable. Scan time: about 12
+seconds. The APK itself is **not** in this repo (12 MB binary) —
+only the recorded results in `real_apk_scan.json` are. Its SHA-256
+is `c29412e02d03e4f0511746a1bcef48c6b73fc1f70c1024fbf04903b0b3f4c485`,
+so anyone can verify the download before re-running the scan.
+
+```
+  APK: test_apks/markor_164.apk
+  Package: net.gsantner.markor
+  Version: 2026.10.0 (code 164)
+  Entries: 1732 (24692136 bytes uncompressed)
+  Permissions: 7 requested, 3 dangerous
+  Components: 19, 11 exported
+  Native libraries: none
+
+  Findings (17: 0 critical, 10 high, 6 medium, 1 low)
+  [MEDIUM] [APK-001] Dangerous permission: android.permission.WRITE_EXTERNAL_STORAGE
+  [MEDIUM] [APK-001] Dangerous permission: android.permission.READ_EXTERNAL_STORAGE
+  [MEDIUM] [APK-001] Dangerous permission: android.permission.MANAGE_EXTERNAL_STORAGE
+  [HIGH] [APK-002] Exported activity: net.gsantner.markor.activity.MainActivity
+  [HIGH] [APK-002] Exported activity: net.gsantner.markor.activity.SettingsActivity
+  [HIGH] [APK-002] Exported activity: other.writeily.widget.WrWidgetConfigure
+  [HIGH] [APK-002] Exported activity: net.gsantner.markor.activity.openeditor.OpenEditorTodoActivity
+  [HIGH] [APK-002] Exported activity: net.gsantner.markor.activity.openeditor.OpenEditorQuickNoteActivity
+  [HIGH] [APK-002] Exported activity: net.gsantner.markor.activity.openeditor.OpenShareIntoActivity
+  [HIGH] [APK-002] Exported activity: net.gsantner.markor.activity.DocumentActivity
+  [HIGH] [APK-002] Exported activity-alias: net.gsantner.markor.AliasDocumentProcessText
+  [HIGH] [APK-002] Exported receiver: other.writeily.widget.WrMarkorWidgetProvider
+  [HIGH] [APK-002] Exported receiver: net.gsantner.markor.widget.TodoWidgetProvider
+  [MEDIUM] [APK-002] Exported receiver: androidx.profileinstaller.ProfileInstallReceiver
+  [MEDIUM] [APK-004] Application allows backup
+  [MEDIUM] [APK-007] Unprotected deep link: markor://
+  [LOW] [APK-008] No network security config — cleartext defaults apply
+
+  [+] Report saved: apkseeker_report.txt
+  Exit code: 1 (findings, no Critical)
+```
+
+What the scan proved, and what it caught:
+
+- **The parser reads a real production manifest.** 59,992 bytes,
+  UTF-16 string pool, 19 components, 7 permissions — all parsed
+  with no error and no crash. Androguard 4.1.4 agrees on all 7
+  permissions, all 19 components (11 activities, 2 services,
+  3 receivers, 2 providers), the package, version name/code,
+  minSdk 21 and targetSdk 35 (Step 9 runs this oracle on the real
+  APK too, when it is present).
+- **Multi-dex works.** Both `classes.dex` and `classes2.dex` are
+  secret-scanned. Markor has 0 secret hits — a real open-source app
+  ships no baked-in keys, which is exactly the expected result, and
+  the scan still read every byte of both dex files to confirm it.
+- **A real bug, found and fixed.** The first run flagged three
+  deep links: `markor://`, `content://` and `file://`. The last two
+  are wrong: `content` and `file` are Android system data schemes
+  — the standard VIEW open-file flow every document editor
+  declares — not app deep links. Flagging them would fire on
+  nearly every real file-handling app. v1.2 lists them in the
+  deep-links table but no longer fires APK-007 for them; only the
+  genuine custom scheme `markor://` is flagged. The lab bad APK
+  still reports its 20 findings, unchanged.
+- **The findings themselves are plausible, not alarming.** A notes
+  app asking for storage permissions, exporting its editor
+  activities, and allowing backup is normal for what it does — the
+  report is a list of questions for the developer (why is
+  `SettingsActivity` exported with no guard?), not a verdict that
+  the app is malicious. The one guarded export
+  (`ProfileInstallReceiver`, guarded by `android.permission.DUMP`)
+  correctly scores Medium, not High.
 
 ## The sample report
 

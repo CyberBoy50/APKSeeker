@@ -1,0 +1,376 @@
+{
+  "tool": "APKSeeker",
+  "tool_version": "1.2",
+  "apk_name": "Markor",
+  "package": "net.gsantner.markor",
+  "version_name": "2026.10.0",
+  "version_code": 164,
+  "source": "F-Droid (https://f-droid.org/en/packages/net.gsantner.markor/)",
+  "download_url": "https://f-droid.org/repo/net.gsantner.markor_164.apk",
+  "apk_size_bytes": 11849016,
+  "apk_sha256": "c29412e02d03e4f0511746a1bcef48c6b73fc1f70c1024fbf04903b0b3f4c485",
+  "scanned": "2026-11-25",
+  "note": "Recorded results of the first real-world production APK scan (v1.2). The APK itself is NOT in this repo (binary, 12 MB) \u2014 download it from the URL above to reproduce. Expected values below are asserted by test_step9 when the APK is present at test_apks/markor_164.apk or APKSEEKER_REAL_APK.",
+  "entries": 1732,
+  "total_uncompressed_bytes": 24692136,
+  "manifest_bytes": 59992,
+  "dex_files": [
+    "classes.dex",
+    "classes2.dex"
+  ],
+  "min_sdk": 21,
+  "target_sdk": 35,
+  "debuggable": false,
+  "allow_backup": true,
+  "permissions": [
+    {
+      "name": "android.permission.WRITE_EXTERNAL_STORAGE",
+      "dangerous": true,
+      "group": "Storage"
+    },
+    {
+      "name": "android.permission.READ_EXTERNAL_STORAGE",
+      "dangerous": true,
+      "group": "Storage"
+    },
+    {
+      "name": "android.permission.INTERNET",
+      "dangerous": false,
+      "group": "normal"
+    },
+    {
+      "name": "com.android.launcher.permission.INSTALL_SHORTCUT",
+      "dangerous": false,
+      "group": "normal"
+    },
+    {
+      "name": "android.permission.REQUEST_INSTALL_PACKAGES",
+      "dangerous": false,
+      "group": "normal"
+    },
+    {
+      "name": "android.permission.MANAGE_EXTERNAL_STORAGE",
+      "dangerous": true,
+      "group": "Storage"
+    },
+    {
+      "name": "net.gsantner.markor.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION",
+      "dangerous": false,
+      "group": "normal"
+    }
+  ],
+  "components": [
+    {
+      "type": "activity",
+      "name": "net.gsantner.markor.activity.MainActivity",
+      "exported": true,
+      "reason": "android:exported=true",
+      "permission": null
+    },
+    {
+      "type": "activity",
+      "name": "net.gsantner.markor.activity.SettingsActivity",
+      "exported": true,
+      "reason": "android:exported=true",
+      "permission": null
+    },
+    {
+      "type": "activity",
+      "name": "net.gsantner.markor.activity.StoragePermissionActivity",
+      "exported": false,
+      "reason": "not exported",
+      "permission": null
+    },
+    {
+      "type": "activity",
+      "name": "net.gsantner.markor.activity.ActionButtonSettingsActivity",
+      "exported": false,
+      "reason": "not exported",
+      "permission": null
+    },
+    {
+      "type": "activity",
+      "name": "other.writeily.widget.WrWidgetConfigure",
+      "exported": true,
+      "reason": "android:exported=true",
+      "permission": null
+    },
+    {
+      "type": "activity",
+      "name": "net.gsantner.markor.activity.openeditor.OpenEditorTodoActivity",
+      "exported": true,
+      "reason": "android:exported=true",
+      "permission": null
+    },
+    {
+      "type": "activity",
+      "name": "net.gsantner.markor.activity.IntroActivity",
+      "exported": false,
+      "reason": "not exported",
+      "permission": null
+    },
+    {
+      "type": "activity",
+      "name": "net.gsantner.markor.activity.openeditor.OpenEditorQuickNoteActivity",
+      "exported": true,
+      "reason": "android:exported=true",
+      "permission": null
+    },
+    {
+      "type": "activity",
+      "name": "net.gsantner.markor.activity.openeditor.OpenShareIntoActivity",
+      "exported": true,
+      "reason": "android:exported=true",
+      "permission": null
+    },
+    {
+      "type": "activity",
+      "name": "net.gsantner.markor.activity.openeditor.OpenFromShortcutOrWidgetActivity",
+      "exported": false,
+      "reason": "not exported",
+      "permission": null
+    },
+    {
+      "type": "activity",
+      "name": "net.gsantner.markor.activity.DocumentActivity",
+      "exported": true,
+      "reason": "android:exported=true",
+      "permission": null
+    },
+    {
+      "type": "activity-alias",
+      "name": "net.gsantner.markor.AliasDocumentProcessText",
+      "exported": true,
+      "reason": "android:exported=true",
+      "permission": null
+    },
+    {
+      "type": "service",
+      "name": "other.writeily.widget.WrFilesWidgetService",
+      "exported": false,
+      "reason": "not exported",
+      "permission": "android.permission.BIND_REMOTEVIEWS"
+    },
+    {
+      "type": "service",
+      "name": "net.gsantner.markor.widget.TodoWidgetService",
+      "exported": false,
+      "reason": "not exported",
+      "permission": "android.permission.BIND_REMOTEVIEWS"
+    },
+    {
+      "type": "receiver",
+      "name": "other.writeily.widget.WrMarkorWidgetProvider",
+      "exported": true,
+      "reason": "android:exported=true",
+      "permission": null
+    },
+    {
+      "type": "receiver",
+      "name": "net.gsantner.markor.widget.TodoWidgetProvider",
+      "exported": true,
+      "reason": "android:exported=true",
+      "permission": null
+    },
+    {
+      "type": "receiver",
+      "name": "androidx.profileinstaller.ProfileInstallReceiver",
+      "exported": true,
+      "reason": "android:exported=true",
+      "permission": "android.permission.DUMP"
+    },
+    {
+      "type": "provider",
+      "name": "androidx.core.content.FileProvider",
+      "exported": false,
+      "reason": "not exported",
+      "permission": null
+    },
+    {
+      "type": "provider",
+      "name": "androidx.startup.InitializationProvider",
+      "exported": false,
+      "reason": "not exported",
+      "permission": null
+    }
+  ],
+  "deep_links": [
+    {
+      "scheme": "markor",
+      "host": "open",
+      "activity": "net.gsantner.markor.activity.DocumentActivity",
+      "exported": true,
+      "permission": null
+    },
+    {
+      "scheme": "content",
+      "host": null,
+      "activity": "net.gsantner.markor.activity.DocumentActivity",
+      "exported": true,
+      "permission": null
+    },
+    {
+      "scheme": "file",
+      "host": null,
+      "activity": "net.gsantner.markor.activity.DocumentActivity",
+      "exported": true,
+      "permission": null
+    }
+  ],
+  "native_libs": {},
+  "secret_hits": [],
+  "total_findings": 17,
+  "counts": {
+    "critical": 0,
+    "high": 10,
+    "medium": 6,
+    "low": 1
+  },
+  "findings_by_code": {
+    "APK-001": 3,
+    "APK-002": 11,
+    "APK-004": 1,
+    "APK-007": 1,
+    "APK-008": 1
+  },
+  "findings": [
+    {
+      "code": "APK-001",
+      "severity": "medium",
+      "title": "Dangerous permission: android.permission.WRITE_EXTERNAL_STORAGE",
+      "evidence": "Protection level 'dangerous' (Storage). Declared in AndroidManifest.xml.",
+      "fix": "Remove the permission if the app does not need it; if it does, request it at runtime and explain why.",
+      "location": "AndroidManifest.xml"
+    },
+    {
+      "code": "APK-001",
+      "severity": "medium",
+      "title": "Dangerous permission: android.permission.READ_EXTERNAL_STORAGE",
+      "evidence": "Protection level 'dangerous' (Storage). Declared in AndroidManifest.xml.",
+      "fix": "Remove the permission if the app does not need it; if it does, request it at runtime and explain why.",
+      "location": "AndroidManifest.xml"
+    },
+    {
+      "code": "APK-001",
+      "severity": "medium",
+      "title": "Dangerous permission: android.permission.MANAGE_EXTERNAL_STORAGE",
+      "evidence": "Protection level 'dangerous' (Storage). Declared in AndroidManifest.xml.",
+      "fix": "Remove the permission if the app does not need it; if it does, request it at runtime and explain why.",
+      "location": "AndroidManifest.xml"
+    },
+    {
+      "code": "APK-002",
+      "severity": "high",
+      "title": "Exported activity: net.gsantner.markor.activity.MainActivity",
+      "evidence": "android:exported=true. No android:permission \u2014 any app on the device can reach it.",
+      "fix": "Set android:exported=false if no other app needs it, or protect it with android:permission so only chosen apps can reach it.",
+      "location": "AndroidManifest.xml"
+    },
+    {
+      "code": "APK-002",
+      "severity": "high",
+      "title": "Exported activity: net.gsantner.markor.activity.SettingsActivity",
+      "evidence": "android:exported=true. No android:permission \u2014 any app on the device can reach it.",
+      "fix": "Set android:exported=false if no other app needs it, or protect it with android:permission so only chosen apps can reach it.",
+      "location": "AndroidManifest.xml"
+    },
+    {
+      "code": "APK-002",
+      "severity": "high",
+      "title": "Exported activity: other.writeily.widget.WrWidgetConfigure",
+      "evidence": "android:exported=true. No android:permission \u2014 any app on the device can reach it.",
+      "fix": "Set android:exported=false if no other app needs it, or protect it with android:permission so only chosen apps can reach it.",
+      "location": "AndroidManifest.xml"
+    },
+    {
+      "code": "APK-002",
+      "severity": "high",
+      "title": "Exported activity: net.gsantner.markor.activity.openeditor.OpenEditorTodoActivity",
+      "evidence": "android:exported=true. No android:permission \u2014 any app on the device can reach it.",
+      "fix": "Set android:exported=false if no other app needs it, or protect it with android:permission so only chosen apps can reach it.",
+      "location": "AndroidManifest.xml"
+    },
+    {
+      "code": "APK-002",
+      "severity": "high",
+      "title": "Exported activity: net.gsantner.markor.activity.openeditor.OpenEditorQuickNoteActivity",
+      "evidence": "android:exported=true. No android:permission \u2014 any app on the device can reach it.",
+      "fix": "Set android:exported=false if no other app needs it, or protect it with android:permission so only chosen apps can reach it.",
+      "location": "AndroidManifest.xml"
+    },
+    {
+      "code": "APK-002",
+      "severity": "high",
+      "title": "Exported activity: net.gsantner.markor.activity.openeditor.OpenShareIntoActivity",
+      "evidence": "android:exported=true. No android:permission \u2014 any app on the device can reach it.",
+      "fix": "Set android:exported=false if no other app needs it, or protect it with android:permission so only chosen apps can reach it.",
+      "location": "AndroidManifest.xml"
+    },
+    {
+      "code": "APK-002",
+      "severity": "high",
+      "title": "Exported activity: net.gsantner.markor.activity.DocumentActivity",
+      "evidence": "android:exported=true. No android:permission \u2014 any app on the device can reach it.",
+      "fix": "Set android:exported=false if no other app needs it, or protect it with android:permission so only chosen apps can reach it.",
+      "location": "AndroidManifest.xml"
+    },
+    {
+      "code": "APK-002",
+      "severity": "high",
+      "title": "Exported activity-alias: net.gsantner.markor.AliasDocumentProcessText",
+      "evidence": "android:exported=true. No android:permission \u2014 any app on the device can reach it.",
+      "fix": "Set android:exported=false if no other app needs it, or protect it with android:permission so only chosen apps can reach it.",
+      "location": "AndroidManifest.xml"
+    },
+    {
+      "code": "APK-002",
+      "severity": "high",
+      "title": "Exported receiver: other.writeily.widget.WrMarkorWidgetProvider",
+      "evidence": "android:exported=true. No android:permission \u2014 any app on the device can reach it.",
+      "fix": "Set android:exported=false if no other app needs it, or protect it with android:permission so only chosen apps can reach it.",
+      "location": "AndroidManifest.xml"
+    },
+    {
+      "code": "APK-002",
+      "severity": "high",
+      "title": "Exported receiver: net.gsantner.markor.widget.TodoWidgetProvider",
+      "evidence": "android:exported=true. No android:permission \u2014 any app on the device can reach it.",
+      "fix": "Set android:exported=false if no other app needs it, or protect it with android:permission so only chosen apps can reach it.",
+      "location": "AndroidManifest.xml"
+    },
+    {
+      "code": "APK-002",
+      "severity": "medium",
+      "title": "Exported receiver: androidx.profileinstaller.ProfileInstallReceiver",
+      "evidence": "android:exported=true. Guarded by android:permission=android.permission.DUMP.",
+      "fix": "Keep the android:permission guard, and check the guarded permission is not itself granted to untrusted apps.",
+      "location": "AndroidManifest.xml"
+    },
+    {
+      "code": "APK-004",
+      "severity": "medium",
+      "title": "Application allows backup",
+      "evidence": "android:allowBackup=true in <application> \u2014 app data can be pulled off with 'adb backup'.",
+      "fix": "Set android:allowBackup=false unless backup is a feature users need.",
+      "location": "AndroidManifest.xml"
+    },
+    {
+      "code": "APK-007",
+      "severity": "medium",
+      "title": "Unprotected deep link: markor://",
+      "evidence": "Exported activity net.gsantner.markor.activity.DocumentActivity handles scheme 'markor://' (host open) \u2014 any app on the device can open it, with no permission check.",
+      "fix": "Protect the activity with android:permission, verify the link (App Links with assetlinks.json) instead of a bare custom scheme, or set android:exported=false.",
+      "location": "AndroidManifest.xml"
+    },
+    {
+      "code": "APK-008",
+      "severity": "low",
+      "title": "No network security config \u2014 cleartext defaults apply",
+      "evidence": "No res/xml/network_security_config.xml, and android:usesCleartextTraffic is not false \u2014 cleartext traffic is governed by the platform default, not by an explicit policy.",
+      "fix": "Add a network security config that forbids cleartext, or set android:usesCleartextTraffic=false.",
+      "location": "AndroidManifest.xml"
+    }
+  ],
+  "androguard_oracle": "Androguard 4.1.4 agrees on all 7 permissions, all 19 components (11 activities, 2 services, 3 receivers, 2 providers), package, version name/code, minSdk 21 and targetSdk 35. debuggable: APKSeeker False (attribute absent, release default) vs Androguard None; allowBackup: True vs 'true'.",
+  "scan_seconds": 12.5
+}

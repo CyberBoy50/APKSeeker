@@ -2,8 +2,10 @@
 
 Build the tool one step at a time, test each step before moving on.
 Every step below is a function in `test_apkseeker.py` — run the whole
-suite with `python run.py test` (139 checks, all passing, including 10
-Androguard oracle cross-checks).
+suite with `python run.py test` (167 checks, all passing, including 10
+Androguard oracle cross-checks on the fixtures and 7 more on the real
+Markor APK when it is present — 153 pass without the real APK, the 14
+live re-scan/oracle checks skipping with a note).
 
 Setup first (once):
 
@@ -297,6 +299,47 @@ extracted from `.ShareActivity`; 4 ABIs with 1 `.so` each; APK-008
 fires 4 times with the right severities (2 High, 2 Medium); the clean
 APK has no deep links, no native libraries and no cleartext findings.
 The test (`test_step8`) asserts all of it.
+
+## Step 9 — Real-world APK
+
+Step 9 (`test_step9`) proves the tool works beyond the lab, and it
+is the step that closed the last two limits:
+
+- **Fixtures are byte-reproducible.** `build_test_apk.py` pins every
+  zip entry timestamp to 1980-01-01, so `python run.py build-apk`
+  produces identical files every time. The test rebuilds all three
+  fixtures into two temporary folders and compares their hashes —
+  and the regenerated bad fixture still scans to exactly 20
+  findings. That closes the "fixtures are not in the GitHub push"
+  limit in substance: the push tool takes text only, but the
+  fixtures regenerate exactly from the text sources in the repo, so
+  nothing is lost.
+- **Multi-dex secret scan.** A variant APK is built with a second
+  dex file (`classes2.dex`) holding a planted Google API key; the
+  test asserts both dex entries are listed and the key in the
+  second dex is found. Markor ships two dex files, so this is a
+  real-world shape, not a hypothetical.
+- **System data schemes are not deep links.** A variant manifest
+  gives the exported `.ShareActivity` five data schemes — `labapp`
+  (custom), `content`, `file`, `http`, `https`. All five are listed
+  in the deep-links table, but APK-007 fires only for `labapp`.
+  `content://` and `file://` are Android's standard VIEW open-file
+  flow, and flagging them fired a false positive on Markor's editor
+  activity on the first real scan.
+- **The recorded real scan.** `real_apk_scan.json` holds Markor's
+  results (17 findings: 0 Critical, 10 High, 6 Medium, 1 Low;
+  1,732 entries; 2 dex files; 0 secret hits). The test checks the
+  recorded numbers add up, and — when the APK is present at
+  `test_apks/markor_164.apk` or `APKSEEKER_REAL_APK` — re-scans it
+  live and asserts the same counts, permissions, components, SDKs
+  and deep links, then cross-checks them against Androguard. When
+  the APK is absent the live checks skip with a note saying where
+  to download it; nothing is faked.
+
+**Test it:** download Markor from F-Droid (see `DEMO.md`), then
+run `APKSEEKER_REAL_APK=test_apks/markor_164.apk python run.py test`
+— Step 9 runs all 25 of its checks, including the live re-scan and
+the Androguard oracle on the real APK.
 
 ## Independent oracle
 

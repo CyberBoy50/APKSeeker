@@ -9,6 +9,10 @@ Step 5 — flags and SDK versions (toggle each flag, report must change)
 Step 6 — secret-pattern scan (planted key found; removed key silent)
 Step 7 — CLI, report and full run (bad APK end to end, clean APK 0)
 Step 8 — stretch: deep links, .so listing, cleartext assessment
+Step 9 — real-world APK: byte-reproducible fixtures, multi-dex secret
+         scan, system data schemes (content/file) not flagged as deep
+         links, and the recorded Markor (F-Droid) scan re-verified live
+         when the APK is present (skipped with a note when it is not).
 Plus: CLI bits, malformed-input handling, UTF-8 pools, and the
 Androguard oracle (test-only, skipped if Androguard is unavailable).
 
@@ -460,8 +464,8 @@ def test_step7():
           proc.returncode == 1, str(proc.returncode))
     check("text report file written", os.path.isfile(out_txt))
     text = open(out_txt, encoding="utf-8").read()
-    check("text report is v1.1 and carries the disclaimer",
-          text.startswith("APKSeeker v1.1")
+    check("text report is v1.2 and carries the disclaimer",
+          text.startswith("APKSeeker v1.2")
           and apkseeker.DISCLAIMER in " ".join(text.split()))
     for needle in ("APK-001", "APK-002", "APK-003", "APK-004", "APK-005",
                    "APK-006", "APK-007", "APK-008",
@@ -565,8 +569,8 @@ def test_cli_bits():
             capture_output=True, text=True)
 
     proc = run_cli("--version")
-    check("--version prints 1.1",
-          proc.returncode == 0 and "APKSeeker v1.1" in proc.stdout)
+    check("--version prints 1.2",
+          proc.returncode == 0 and "APKSeeker v1.2" in proc.stdout)
     proc = run_cli("--list-checks")
     check("banner carries the disclaimer",
           apkseeker.DISCLAIMER in " ".join(proc.stdout.split()))
@@ -744,11 +748,222 @@ def test_androguard_oracle():
           str(oracle["allow_backup"]))
 
 
+# --- Step 9: real-world APK ---------------------------------------------------
+# The first production APK ever scanned with this tool: Markor
+# (net.gsantner.markor 2026.10.0, versionCode 164), an open-source
+# notes app downloaded from F-Droid. The APK itself is NOT in this
+# repo (12 MB binary) — download it to reproduce:
+#   curl -o test_apks/markor_164.apk \
+#     https://f-droid.org/repo/net.gsantner.markor_164.apk
+# or point APKSEEKER_REAL_APK at a copy. The recorded results live in
+# real_apk_scan.json (text, in the repo) and are asserted below.
+REAL_APK_SUMMARY = os.path.join(HERE, "real_apk_scan.json")
+
+
+def _real_apk_path():
+    """The real APK, if present locally — else None (live checks skip)."""
+    for cand in (os.environ.get("APKSEEKER_REAL_APK", ""),
+                 os.path.join(HERE, "test_apks", "markor_164.apk")):
+        if cand and os.path.isfile(cand):
+            return cand
+    return None
+
+
+def _oracle_dump(ag, apk_path):
+    """Androguard manifest facts for one APK (manifest only, no dex
+    analysis), or None when Androguard fails. Test-only."""
+    script = (
+        "import json, sys\n"
+        "from androguard.core.apk import APK\n"
+        "a = APK(sys.argv[1])\n"
+        "app = a.get_android_manifest_xml()\n"
+        "ns = '{http://schemas.android.com/apk/res/android}'\n"
+        "application = app.find('application')\n"
+        "out = {\n"
+        "  'permissions': sorted(a.get_permissions()),\n"
+        "  'activities': sorted(a.get_activities()),\n"
+        "  'services': sorted(a.get_services()),\n"
+        "  'receivers': sorted(a.get_receivers()),\n"
+        "  'providers': sorted(a.get_providers()),\n"
+        "  'min_sdk': a.get_min_sdk_version(),\n"
+        "  'target_sdk': a.get_target_sdk_version(),\n"
+        "  'debuggable': application.get(ns + 'debuggable'),\n"
+        "  'allow_backup': application.get(ns + 'allowBackup'),\n"
+        "  'package': a.get_package(),\n"
+        "  'version_name': a.get_androidversion_name(),\n"
+        "  'version_code': a.get_androidversion_code(),\n"
+        "}\n"
+        "print(json.dumps(out))\n"
+    )
+    proc = subprocess.run(
+        [ag, "-c", script, apk_path],
+        capture_output=True, text=True, timeout=180)
+    if proc.returncode != 0:
+        return None
+    return json.loads(proc.stdout)
+
+
+def test_step9():
+    step("Step 9 — Real-world APK (Markor from F-Droid)")
+    import hashlib
+
+    def _hashes(directory):
+        out = {}
+        for name in sorted(os.listdir(directory)):
+            with open(os.path.join(directory, name), "rb") as fh:
+                out[name] = hashlib.md5(fh.read()).hexdigest()
+        return out
+
+    # 9a. The fixtures are byte-reproducible: build twice, same bytes.
+    dir1 = tempfile.mkdtemp(prefix="apkseeker_det1_")
+    dir2 = tempfile.mkdtemp(prefix="apkseeker_det2_")
+    build_test_apk.build_all(dir1)
+    build_test_apk.build_all(dir2)
+    h1, h2 = _hashes(dir1), _hashes(dir2)
+    check("fixtures regenerate byte-identically (pinned zip dates)",
+          h1 == h2, "%r vs %r" % (h1, h2))
+    check("regenerated fixtures are the 3 known APKs",
+          sorted(h1) == ["test_bad.apk", "test_clean.apk",
+                         "test_minimal.apk"], str(sorted(h1)))
+    regen = _analyze(os.path.join(dir1, "test_bad.apk"))
+    check("regenerated bad fixture still scans to 20 findings",
+          len(regen.findings) == 20, str(len(regen.findings)))
+
+    # 9b. Multi-dex: Markor ships classes.dex + classes2.dex, and the
+    # secret scan must read every classes*.dex, not just the first.
+    key = "AIza" + "K" * 35  # a Google API key pattern (AIza + 35 chars)
+    path = _build_variant(
+        copy.deepcopy(build_test_apk.BAD_MANIFEST),
+        build_test_apk.BAD_DEX_STRINGS,
+        [("classes2.dex", build_test_apk.build_dex(
+            ["nothing here", key]))],
+        name="multidex.apk")
+    apk = apkseeker.load_apk(path)
+    check("multi-dex APK lists 2 dex entries",
+          len(apk.dex_entries()) == 2, str(len(apk.dex_entries())))
+    analysis = apkseeker.analyze_apk(apk)
+    hits2 = [h for h in analysis.secret_hits if h[0] == "classes2.dex"]
+    check("secret planted in classes2.dex is found",
+          len(hits2) == 1 and hits2[0][2] == "Google API key",
+          str(hits2))
+
+    # 9c. System data schemes are NOT deep links: an exported activity
+    # handling content:// or file:// is the standard VIEW open-file
+    # flow (Markor's editor does exactly this). Only the custom
+    # scheme may fire APK-007.
+    tree = copy.deepcopy(build_test_apk.BAD_MANIFEST)
+    app = [c for c in tree["children"] if c["name"] == "application"][0]
+    share = [c for c in app["children"]
+             if c["name"] == "activity"
+             and dict((a[1], a[2][1]) for a in c["attrs"]).get("name")
+             == ".ShareActivity"][0]
+    filt = share["children"][0]
+    for scheme in ("content", "file", "http", "https"):
+        filt["children"].append(
+            {"name": "data", "attrs": [
+                build_test_apk._attr("scheme", "string", scheme)],
+             "children": []})
+    path = _build_variant(tree, build_test_apk.BAD_DEX_STRINGS,
+                          name="dataschemes.apk")
+    analysis = _analyze(path)
+    schemes = sorted(s for s, _h, a, _e, _g in analysis.deep_links
+                     if a == ".ShareActivity")
+    check("content/file/http/https/custom schemes are all listed",
+          schemes == ["content", "file", "http", "https", "labapp"],
+          str(schemes))
+    titles = [f.title for f in _findings(analysis, "APK-007")]
+    check("APK-007 fires only for the custom scheme",
+          titles == ["Unprotected deep link: labapp://"], str(titles))
+
+    # 9d. The recorded real scan (real_apk_scan.json) is consistent,
+    # and a live re-scan — when the APK is present — must reproduce it.
+    summary = json.load(open(REAL_APK_SUMMARY, encoding="utf-8"))
+    check("recorded real scan: 17 findings, 0/10/6/1",
+          summary["total_findings"] == 17
+          and summary["counts"] == {"critical": 0, "high": 10,
+                                    "medium": 6, "low": 1},
+          str(summary["counts"]))
+    check("recorded real scan counts add up",
+          summary["total_findings"] == len(summary["findings"])
+          == sum(summary["counts"].values()))
+    check("recorded real scan: Markor 2026.10.0 (code 164)",
+          summary["package"] == "net.gsantner.markor"
+          and summary["version_name"] == "2026.10.0"
+          and summary["version_code"] == 164)
+    check("recorded real scan: 1732 entries, 2 dex files, 0 secrets",
+          summary["entries"] == 1732
+          and summary["dex_files"] == ["classes.dex", "classes2.dex"]
+          and summary["secret_hits"] == [])
+    real = _real_apk_path()
+    if real is None:
+        print("  [SKIP] real APK not present — download it to "
+              "test_apks/markor_164.apk (see real_apk_scan.json) "
+              "to re-verify the live scan.")
+        return
+    live = _analyze(real)
+    check("live re-scan of Markor: 17 findings",
+          len(live.findings) == summary["total_findings"],
+          str(len(live.findings)))
+    check("live re-scan counts are 0/10/6/1",
+          apkseeker.count_by_severity(live.findings)
+          == summary["counts"],
+          str(apkseeker.count_by_severity(live.findings)))
+    check("live re-scan: 7 permissions, 3 dangerous",
+          len(live.permissions) == 7
+          and sum(1 for _n, d, _g in live.permissions if d) == 3)
+    check("live re-scan: 19 components, 11 exported",
+          len(live.components) == 19
+          and sum(1 for c in live.components if c["exported"]) == 11)
+    check("live re-scan: targetSdk 35, minSdk 21",
+          live.flags["target_sdk"] == 35 and live.flags["min_sdk"] == 21)
+    check("live re-scan: 3 deep links, 1 APK-007 (markor://)",
+          len(live.deep_links) == 3
+          and [f.title for f in _findings(live, "APK-007")]
+          == ["Unprotected deep link: markor://"])
+    check("live re-scan: 0 secret hits in 2 dex files",
+          live.secret_hits == []
+          and len(apkseeker.load_apk(real).dex_entries()) == 2)
+    ag = _find_androguard_python()
+    if ag is None:
+        print("  [SKIP] Androguard not installed — live oracle on the "
+              "real APK skipped.")
+        return
+    oracle = _oracle_dump(ag, real)
+    if oracle is None:
+        print("  [SKIP] Androguard failed on the real APK.")
+        return
+    package = oracle["package"]
+
+    def resolve(name):
+        if name.startswith("."):
+            return package + name
+        if "." not in name:
+            return package + "." + name
+        return name
+
+    check("oracle (real APK): permissions match Androguard",
+          sorted(n for n, _d, _g in live.permissions)
+          == oracle["permissions"])
+    for ctype, key in (("activity", "activities"),
+                       ("service", "services"),
+                       ("receiver", "receivers"),
+                       ("provider", "providers")):
+        ours = sorted(resolve(c["name"]) for c in live.components
+                      if c["type"] == ctype)
+        check("oracle (real APK): %s match Androguard" % ctype,
+              ours == oracle[key], "%r vs %r" % (ours, oracle[key]))
+    check("oracle (real APK): targetSdk 35 matches Androguard",
+          live.flags["target_sdk"] == int(oracle["target_sdk"]))
+    check("oracle (real APK): package matches Androguard",
+          apkseeker.load_apk(real).manifest.attr("package")
+          == oracle["package"])
+
+
 def main():
     global PASSED, FAILED
     print("APKSeeker step tests — %s" % BAD_APK)
     for fn in (test_step1, test_step2, test_step3, test_step4, test_step5,
-               test_step6, test_step7, test_step8, test_cli_bits,
+               test_step6, test_step7, test_step8, test_step9, test_cli_bits,
                test_androguard_oracle):
         try:
             fn()

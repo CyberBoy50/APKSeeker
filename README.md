@@ -10,7 +10,7 @@ config. Everything is read-only: the APK is never modified and nothing
 is executed.
 
 - **Author:** CyberBoy50
-- **Version:** 1.1
+- **Version:** 1.2
 - **Platform:** Windows, macOS and Linux (pure Python, standard
   library only)
 - **Dependencies:** none — Python 3.8+ standard library only
@@ -177,6 +177,32 @@ Run with no arguments (or `-i` / `--menu`):
 [0] Exit
 ```
 
+## Real-world scan: Markor from F-Droid
+
+v1.2 scanned a real production APK for the first time: **Markor**
+(`net.gsantner.markor` 2026.10.0, versionCode 164), an open-source
+notes app downloaded from F-Droid — 1,732 entries, 12 MB, two dex
+files (`classes.dex` + `classes2.dex`), a 59,992-byte UTF-16-pool
+manifest. Result: **17 findings (0 Critical, 10 High, 6 Medium,
+1 Low)** in about 12 seconds — 3 dangerous storage permissions,
+11 exported components (10 unguarded), 1 unprotected deep link
+(`markor://`), `allowBackup` true, no network security config, and
+0 secret hits. Androguard 4.1.4 agrees on all 7 permissions, all 19
+components, the package, version, minSdk 21 and targetSdk 35. Full
+results in `DEMO.md` and `real_apk_scan.json`; reproduce it with:
+
+```
+curl -o test_apks/markor_164.apk https://f-droid.org/repo/net.gsantner.markor_164.apk
+python3 apkseeker.py test_apks/markor_164.apk
+```
+
+The APK itself is **not** in this repo (12 MB binary) — only the
+recorded results are. That scan also fixed a real bug: `content://`
+and `file://` were flagged as unprotected deep links, but they are
+Android system data schemes (the standard VIEW open-file flow), not
+app deep links — they are now listed, not flagged. Only a custom
+scheme on an exported activity fires APK-007.
+
 ## Test APKs (no Android Studio needed)
 
 There is no Android SDK on this machine, so the fixtures are built by
@@ -203,13 +229,22 @@ Regenerate them any time:
 python3 run.py build-apk
 ```
 
+The fixtures are byte-for-byte reproducible: zip entry timestamps
+are pinned, so two runs produce identical files (verified by Step 9,
+which rebuilds them twice and compares hashes). That is why the
+three binary `.apk` files are not in the GitHub push — the push
+mechanism accepts UTF-8 text only, and the fixtures regenerate
+exactly from the text sources in this repo. Anyone cloning the repo
+runs one command and gets the identical fixtures.
+
 ## Files
 
 | File | What it is |
 |------|-----------|
 | `apkseeker.py` | The tool — parser, checks, reports, CLI, menu |
 | `build_test_apk.py` | AXML writer + minimal dex builder + fixture trees |
-| `test_apkseeker.py` | Step tests (Steps 1–8) + CLI checks + Androguard oracle |
+| `test_apkseeker.py` | Step tests (Steps 1–9) + CLI checks + Androguard oracle — 167 checks, all passing (153 without the real APK present; the 14 live re-scan/oracle checks skip with a note) |
+| `real_apk_scan.json` | Recorded results of the first real-world scan (Markor from F-Droid) — the numbers Step 9 asserts |
 | `run.py` / `run.bat` / `run.sh` | Cross-platform launchers |
 | `requirements.txt` | Empty — standard library only |
 | `test_apks/` | The three fixture APKs |
@@ -217,7 +252,7 @@ python3 run.py build-apk
 | `RESEARCH_CLI_TOOLS.md` | Research: MobSF, Androguard, jadx, Apktool, apkleaks, Quark-Engine, pyaxml, apkanalyzer/aapt2 |
 | `RESEARCH_IMPLEMENTATION.md` | Design: AXML layout, typed values, rules, test plan |
 
-## Lab-only note
+## Authorized use
 
 APKSeeker is a **static analyzer for learning and authorized audit
 work**. Scan only APKs you own, built yourself, or have written
@@ -236,5 +271,5 @@ every JSON report.
 
 ## Author
 
-CyberBoy50 — APKSeeker v1.1. Theme: green (default family theme; the
+CyberBoy50 — APKSeeker v1.2. Theme: green (default family theme; the
 colour lives in one place, class `C` at the top of `apkseeker.py`).

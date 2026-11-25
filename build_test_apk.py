@@ -552,13 +552,29 @@ FAKE_SO = b"\x7fELF\x02\x01\x01\x00" + b"\x00" * 64
 
 
 def _write_apk(path, manifest_tree, dex_strings=None, extra_entries=None):
-    """Assemble one APK zip from a manifest tree + optional dex + extras."""
+    """Assemble one APK zip from a manifest tree + optional dex + extras.
+
+    Zip entry timestamps are pinned to 1980-01-01 so the output is
+    byte-for-byte reproducible: running `python run.py build-apk`
+    twice produces identical files, and anyone cloning the repo can
+    verify the fixtures match the generator exactly (md5sum). The
+    scanner reads entry contents, never timestamps, so the pinned
+    date changes nothing about a scan.
+    """
+    fixed_date = (1980, 1, 1, 0, 0, 0)
+
+    def _add(zf, name, data):
+        info = zipfile.ZipInfo(name, date_time=fixed_date)
+        info.compress_type = zipfile.ZIP_DEFLATED
+        info.external_attr = 0o600 << 16
+        zf.writestr(info, data)
+
     with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as zf:
-        zf.writestr("AndroidManifest.xml", build_axml(manifest_tree))
+        _add(zf, "AndroidManifest.xml", build_axml(manifest_tree))
         if dex_strings is not None:
-            zf.writestr("classes.dex", build_dex(dex_strings))
+            _add(zf, "classes.dex", build_dex(dex_strings))
         for name, data in (extra_entries or []):
-            zf.writestr(name, data)
+            _add(zf, name, data)
 
 
 def build_all(out_dir=OUT_DIR):
