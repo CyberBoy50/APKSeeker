@@ -12,7 +12,7 @@ python3 apkseeker.py test_apks/test_bad.apk
 
 ```
 ============================================================
-  APKSeeker v1.0 — Android APK Static Analyzer
+  APKSeeker v1.1 — Android APK Static Analyzer
   by CyberBoy50
   AUTHORIZED USE ONLY — scan APKs you own or have written
   permission to audit. APKSeeker only reads; it never runs

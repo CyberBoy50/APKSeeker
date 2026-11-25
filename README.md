@@ -10,7 +10,7 @@ config. Everything is read-only: the APK is never modified and nothing
 is executed.
 
 - **Author:** CyberBoy50
-- **Version:** 1.0
+- **Version:** 1.1
 - **Platform:** Windows, macOS and Linux (pure Python, standard
   library only)
 - **Dependencies:** none — Python 3.8+ standard library only
@@ -228,7 +228,13 @@ Never upload a real app's APK to an untrusted service, and never treat
 a clean report as proof an app is safe: static analysis sees what is
 declared and what is baked in, not what the code does at runtime.
 
+> DISCLAIMER — AUTHORIZED USE ONLY. This tool was built for ethical, authorized security testing only. You are using it on your own responsibility. The authors are not responsible for how you use it, or for anything that happens because of your use. Only test systems, code, and data you own or have explicit written permission to test — testing anything else may be illegal (for example, PECA 2016 in Pakistan).
+
+The same disclaimer is printed in the banner on every run and written
+into the header of every text report and the `disclaimer` field of
+every JSON report.
+
 ## Author
 
-CyberBoy50 — APKSeeker v1.0. Theme: green (default family theme; the
+CyberBoy50 — APKSeeker v1.1. Theme: green (default family theme; the
 colour lives in one place, class `C` at the top of `apkseeker.py`).

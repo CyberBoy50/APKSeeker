@@ -94,12 +94,27 @@ import os
 import re
 import struct
 import sys
+import textwrap
 import zipfile
 from datetime import datetime
 
-VERSION = "1.0"
+VERSION = "1.1"
 AUTHOR = "CyberBoy50"
 QUIET = False
+
+# Explicit responsibility disclaimer. Wording is fixed — do not
+# paraphrase it. It is printed in the banner, written into the header
+# of every generated text report, carried as the "disclaimer" field of
+# every JSON report, and quoted in the README.
+DISCLAIMER = (
+    "DISCLAIMER — AUTHORIZED USE ONLY. This tool was built for ethical, "
+    "authorized security testing only. You are using it on your own "
+    "responsibility. The authors are not responsible for how you use it, "
+    "or for anything that happens because of your use. Only test systems, "
+    "code, and data you own or have explicit written permission to test — "
+    "testing anything else may be illegal (for example, PECA 2016 in "
+    "Pakistan)."
+)
 
 # Tunables (change here, nowhere else).
 MAX_MANIFEST_SIZE = 4 * 1024 * 1024   # a manifest bigger than this is refused
@@ -184,6 +199,17 @@ BANNER = r"""
 
               by CyberBoy50
      APK STATIC ANALYZER  |  AUTHORIZED USE ONLY
+ ==================================================
+  DISCLAIMER — AUTHORIZED USE ONLY.
+  This tool was built for ethical, authorized
+  security testing only. You are using it on your
+  own responsibility. The authors are not
+  responsible for how you use it, or for anything
+  that happens because of your use. Only test
+  systems, code, and data you own or have explicit
+  written permission to test — testing anything
+  else may be illegal (for example, PECA 2016 in
+  Pakistan).
  ==================================================
 """
 
@@ -1271,6 +1297,8 @@ def build_text_report(apk, analysis, shown_findings=None):
     lines.append("APKSeeker v%s — Android APK Static Analyzer" % VERSION)
     lines.append("by %s — AUTHORIZED USE ONLY" % AUTHOR)
     lines.append("=" * 58)
+    lines.extend(textwrap.wrap(DISCLAIMER, width=58))
+    lines.append("=" * 58)
     lines.append("APK: %s" % apk.path)
     lines.append("Scanned: %s"
                  % datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
@@ -1386,6 +1414,7 @@ def build_json_report(apk, analysis, shown_findings=None):
         "tool": "APKSeeker",
         "version": VERSION,
         "author": AUTHOR,
+        "disclaimer": DISCLAIMER,
         "apk": apk.path,
         "scanned": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "manifest": summary,

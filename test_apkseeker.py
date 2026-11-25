@@ -460,6 +460,9 @@ def test_step7():
           proc.returncode == 1, str(proc.returncode))
     check("text report file written", os.path.isfile(out_txt))
     text = open(out_txt, encoding="utf-8").read()
+    check("text report is v1.1 and carries the disclaimer",
+          text.startswith("APKSeeker v1.1")
+          and apkseeker.DISCLAIMER in " ".join(text.split()))
     for needle in ("APK-001", "APK-002", "APK-003", "APK-004", "APK-005",
                    "APK-006", "APK-007", "APK-008",
                    "com.example.labapp", "targetSdkVersion: 28"):
@@ -482,6 +485,10 @@ def test_step7():
           str(data["counts"]))
     check("JSON has all 9 check sections",
           len(data["findings"]) == 20 and len(data["permissions"]) == 6)
+    check("JSON report carries the disclaimer",
+          data.get("disclaimer", "").startswith(
+              "DISCLAIMER — AUTHORIZED USE ONLY.")
+          and data["disclaimer"].endswith("PECA 2016 in Pakistan)."))
     out_clean = os.path.join(tempfile.mkdtemp(), "clean.txt")
     proc = subprocess.run(
         [sys.executable, os.path.join(HERE, "apkseeker.py"), CLEAN_APK,
@@ -558,9 +565,11 @@ def test_cli_bits():
             capture_output=True, text=True)
 
     proc = run_cli("--version")
-    check("--version prints 1.0",
-          proc.returncode == 0 and "APKSeeker v1.0" in proc.stdout)
+    check("--version prints 1.1",
+          proc.returncode == 0 and "APKSeeker v1.1" in proc.stdout)
     proc = run_cli("--list-checks")
+    check("banner carries the disclaimer",
+          apkseeker.DISCLAIMER in " ".join(proc.stdout.split()))
     check("--list-checks lists 9 checks",
           proc.returncode == 0 and proc.stdout.count("APK-00") == 9,
           str(proc.stdout.count("APK-00")))
