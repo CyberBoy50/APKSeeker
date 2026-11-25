@@ -273,3 +273,5 @@ every JSON report.
 
 CyberBoy50 — APKSeeker v1.2. Theme: green (default family theme; the
 colour lives in one place, class `C` at the top of `apkseeker.py`).
+
+License: MIT — see LICENSE
